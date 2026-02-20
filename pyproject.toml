@@ -1,0 +1,47 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "nativ"
+version = "0.1.0"
+description = "Python SDK for the Nativ AI localization platform"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.9"
+authors = [{ name = "Nativ", email = "hello@usenativ.com" }]
+keywords = ["localization", "translation", "i18n", "l10n", "ai"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Localization",
+    "Typing :: Typed",
+]
+dependencies = ["httpx>=0.24.0"]
+
+[project.urls]
+Homepage = "https://usenativ.com"
+Documentation = "https://docs.usenativ.com"
+Repository = "https://github.com/usenativ/nativ-python"
+Issues = "https://github.com/usenativ/nativ-python/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/nativ"]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-httpx>=0.35.0",
+    "anyio[trio]>=4.0",
+    "pytest-anyio>=0.0.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
