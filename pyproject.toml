@@ -29,8 +29,8 @@ dependencies = ["httpx>=0.24.0"]
 [project.urls]
 Homepage = "https://usenativ.com"
 Documentation = "https://docs.usenativ.com"
-Repository = "https://github.com/usenativ/nativ-python"
-Issues = "https://github.com/usenativ/nativ-python/issues"
+Repository = "https://github.com/Nativ-Technologies/nativ-python"
+Issues = "https://github.com/Nativ-Technologies/nativ-python/issues"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/nativ"]
