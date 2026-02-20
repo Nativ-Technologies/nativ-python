@@ -4,13 +4,13 @@ build-backend = "hatchling.build"
 
 [project]
 name = "nativ"
-version = "0.1.0"
+version = "0.2.0"
 description = "Python SDK for the Nativ AI localization platform"
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.9"
 authors = [{ name = "Nativ", email = "hello@usenativ.com" }]
-keywords = ["localization", "translation", "i18n", "l10n", "ai"]
+keywords = ["localization", "translation", "i18n", "l10n", "ai", "cli"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
@@ -23,8 +23,12 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
     "Topic :: Software Development :: Localization",
     "Typing :: Typed",
+    "Environment :: Console",
 ]
 dependencies = ["httpx>=0.24.0"]
+
+[project.scripts]
+nativ = "nativ._cli:cli_entry"
 
 [project.urls]
 Homepage = "https://usenativ.com"

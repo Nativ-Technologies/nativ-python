@@ -31,6 +31,65 @@ for r in results:
     print(r.translated_text)
 ```
 
+## CLI
+
+The `nativ` command is included when you install the SDK. Set your API key once and use it from any terminal or CI pipeline.
+
+```bash
+export NATIV_API_KEY="nativ_..."
+```
+
+### Translate
+
+```bash
+nativ translate "Launch your product globally" --to French
+# Lancez votre produit à l'international
+
+nativ t "Hello" --to German --formality formal --backtranslate --json
+```
+
+### Batch translate
+
+```bash
+nativ batch "Sign up" "Log in" "Settings" --to Spanish
+
+# Or pipe from stdin (one text per line):
+cat strings.txt | nativ batch --to Japanese
+```
+
+### Translation memory
+
+```bash
+nativ tm search "Hello" --target-lang fr
+nativ tm list --target-lang fr --limit 10
+nativ tm add "Hello" "Bonjour" --source-lang en --target-lang fr
+nativ tm stats
+nativ tm delete <entry-id>
+```
+
+### Languages, style guides, brand voice
+
+```bash
+nativ languages
+nativ style-guides
+nativ brand-voice
+```
+
+### OCR & image inspection
+
+```bash
+nativ extract screenshot.png
+nativ inspect ad_creative.jpg --countries "Japan,Brazil"
+```
+
+### JSON output
+
+Every command supports `--json` for machine-readable output, perfect for shell scripts and CI:
+
+```bash
+nativ translate "Hello" --to French --json | jq .translated_text
+```
+
 ## Async usage
 
 ```python
@@ -187,9 +246,10 @@ client = Nativ(
 
 This SDK is the foundation for Nativ integrations:
 
+- **CLI** — `nativ translate "Hello" --to French` (included, see above)
 - **[nativ-mcp](https://pypi.org/project/nativ-mcp/)** — MCP server for Claude, Cursor, etc.
-- **LangChain tool** — `pip install nativ[langchain]` (coming soon)
-- **CrewAI tool** — `pip install nativ[crewai]` (coming soon)
+- **[langchain-nativ](https://pypi.org/project/langchain-nativ/)** — LangChain tool for AI agents
+- **CrewAI** — works via langchain-nativ (see [CrewAI docs](https://github.com/Nativ-Technologies/nativ-python))
 
 ## License
 
