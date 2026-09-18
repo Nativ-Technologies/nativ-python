@@ -80,6 +80,9 @@ nativ brand-voice
 ```bash
 nativ extract screenshot.png
 nativ inspect ad_creative.jpg --countries "Japan,Brazil"
+nativ transcribe clip.mp4 --keep-bed
+nativ voices --language-code fr
+nativ subtitle-parse captions.srt
 ```
 
 ### JSON output
@@ -151,6 +154,30 @@ result = client.inspect_image("ad_creative.jpg")
 print(result.verdict)  # "SAFE" or "NOT SAFE"
 for issue in result.affected_countries:
     print(f"{issue.country}: {issue.issue} → {issue.suggestion}")
+```
+
+### Audio, video, and subtitles
+
+```python
+# Speech-to-text (audio or video). Draft is unbilled; synthesize is billed.
+draft = client.transcribe_audio("clip.mp4", keep_background_music=True)
+
+voices = client.list_voices(language_code="fr")
+dub = client.synthesize_audio(
+    language="French",
+    language_code="fr",
+    voice_id=voices.voices[0].id,
+    segments=[{"text": s.text, "start_ms": s.start_ms, "end_ms": s.end_ms} for s in draft.segments],
+    video_id=draft.video_id,
+    source_duration_ms=draft.duration_ms,
+    stem_id=draft.stem_id,
+    keep_background_music=True,
+)
+# dub.audio_base64 / dub.video_base64
+
+cues = client.parse_subtitle("captions.srt")
+localized = client.localize_subtitles(["fr", "de"], subtitle="captions.srt")
+print(localized.languages[0].srt_utf8)
 ```
 
 ### Translation memory

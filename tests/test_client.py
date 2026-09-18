@@ -488,3 +488,104 @@ class TestErrors:
             c.translate("Hello", "French")
         assert exc_info.value.status_code == status
         assert exc_info.value.body is not None
+
+
+TRANSCRIBE_RESPONSE = {
+    "transcript": "Hello world",
+    "detected_language": "en",
+    "duration_ms": 1200,
+    "segments": [{"id": "1", "text": "Hello world", "start_ms": 0, "end_ms": 1200}],
+    "provider": "gcp",
+    "estimated_credit_cost": 10,
+    "billed_seconds": 2,
+    "stem_id": None,
+    "bed_mode": None,
+    "video_id": "v" * 32,
+}
+
+
+class TestAudio:
+    def test_transcribe_audio(self, httpx_mock):
+        httpx_mock.add_response(
+            url=f"{BASE}/audio/transcribe",
+            method="POST",
+            json=TRANSCRIBE_RESPONSE,
+        )
+        c = Nativ(api_key=API_KEY, base_url=BASE)
+        result = c.transcribe_audio(b"fake-wav-bytes")
+        assert result.transcript == "Hello world"
+        assert result.segments[0].end_ms == 1200
+        assert result.video_id == "v" * 32
+
+    def test_list_voices(self, httpx_mock):
+        httpx_mock.add_response(
+            url=f"{BASE}/audio/voices",
+            method="GET",
+            json={
+                "provider": "gcp",
+                "voices": [{
+                    "id": "en-US-Chirp",
+                    "name": "Chirp",
+                    "gender": "female",
+                    "locale": "en-US",
+                    "accent_label": "US",
+                    "provider": "gcp",
+                    "category": "preset",
+                }],
+            },
+        )
+        c = Nativ(api_key=API_KEY, base_url=BASE)
+        result = c.list_voices()
+        assert result.voices[0].id == "en-US-Chirp"
+
+    def test_synthesize_audio(self, httpx_mock):
+        httpx_mock.add_response(
+            url=f"{BASE}/audio/synthesize",
+            method="POST",
+            json={
+                "audio_base64": "AAAA",
+                "mime_type": "audio/wav",
+                "metadata": {
+                    "cost": 50,
+                    "billed_seconds": 2,
+                    "credits_per_second": 25,
+                    "audio_cost": 40,
+                    "text_cost": 10,
+                    "duration_ms": 1200,
+                    "source_duration_ms": 1200,
+                    "speaking_rate": 1.0,
+                    "duration_match": "exact",
+                    "provider": "gcp",
+                    "voice_id": "en-US-Chirp",
+                },
+            },
+        )
+        c = Nativ(api_key=API_KEY, base_url=BASE)
+        result = c.synthesize_audio(
+            language="French",
+            language_code="fr",
+            voice_id="en-US-Chirp",
+            segments=[{"text": "Bonjour", "start_ms": 0, "end_ms": 500}],
+        )
+        assert result.audio_base64 == "AAAA"
+        assert result.metadata.cost == 50
+
+    def test_parse_subtitle(self, httpx_mock):
+        httpx_mock.add_response(
+            url=f"{BASE}/subtitle/parse",
+            method="POST",
+            json={
+                "duration_ms": 2000,
+                "cues": [{
+                    "id": "1",
+                    "text": "Hello",
+                    "start_ms": 0,
+                    "end_ms": 1000,
+                    "begin": "00:00:00,000",
+                    "end": "00:00:01,000",
+                }],
+            },
+        )
+        c = Nativ(api_key=API_KEY, base_url=BASE)
+        result = c.parse_subtitle(b"1\n00:00:00,000 --> 00:00:01,000\nHello\n")
+        assert result.cues[0].text == "Hello"

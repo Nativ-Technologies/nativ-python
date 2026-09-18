@@ -309,6 +309,51 @@ def cmd_inspect(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_transcribe(args: argparse.Namespace) -> int:
+    client = _get_client()
+    try:
+        result = client.transcribe_audio(
+            args.file,
+            source_language_code=args.source_lang,
+            keep_background_music=args.keep_bed,
+        )
+    finally:
+        client.close()
+    if args.json:
+        print(_json_out(result))
+    else:
+        print(result.transcript)
+    return 0
+
+
+def cmd_voices(args: argparse.Namespace) -> int:
+    client = _get_client()
+    try:
+        result = client.list_voices(language_code=args.language_code)
+    finally:
+        client.close()
+    if args.json:
+        print(_json_out(result))
+    else:
+        for v in result.voices:
+            print(f"{v.id}\t{v.name}\t{v.locale}\t{v.gender}")
+    return 0
+
+
+def cmd_subtitle_parse(args: argparse.Namespace) -> int:
+    client = _get_client()
+    try:
+        result = client.parse_subtitle(args.file)
+    finally:
+        client.close()
+    if args.json:
+        print(_json_out(result))
+    else:
+        for cue in result.cues:
+            print(f"{cue.begin} --> {cue.end}\t{cue.text}")
+    return 0
+
+
 # ---------------------------------------------------------------------------
 # Parser
 # ---------------------------------------------------------------------------
@@ -454,6 +499,24 @@ def build_parser() -> argparse.ArgumentParser:
                    help="comma-separated country list to check")
     _add_output_flag(p)
     p.set_defaults(func=cmd_inspect)
+
+    p = sub.add_parser("transcribe", help="transcribe audio or video")
+    p.add_argument("file", help="path to audio or video file")
+    p.add_argument("--source-lang", metavar="CODE", help="source language code")
+    p.add_argument("--keep-bed", action="store_true",
+                   help="keep background music stem")
+    _add_output_flag(p)
+    p.set_defaults(func=cmd_transcribe)
+
+    p = sub.add_parser("voices", help="list TTS voices")
+    p.add_argument("--language-code", metavar="CODE")
+    _add_output_flag(p)
+    p.set_defaults(func=cmd_voices)
+
+    p = sub.add_parser("subtitle-parse", help="parse an SRT/ITT file")
+    p.add_argument("file", help="path to subtitle file")
+    _add_output_flag(p)
+    p.set_defaults(func=cmd_subtitle_parse)
 
     return parser
 

@@ -39,14 +39,29 @@ from ._types import (
     StyleGuide,
     BrandVoice,
 )
+from ._media import (
+    AudioConsentScript,
+    AudioPreview,
+    AudioSegment,
+    AudioSynthesis,
+    AudioSynthesizeMetadata,
+    AudioTranscript,
+    AudioVoice,
+    AudioVoices,
+    ClonedVoice,
+    RemuxedVideo,
+    SubtitleCue,
+    SubtitleParse,
+    SubtitlePlayground,
+    SubtitlePlaygroundCue,
+    SubtitlePlaygroundLanguage,
+)
 
 __all__ = [
     "__version__",
-    # Clients
     "Nativ",
     "AsyncNativ",
     "FileInput",
-    # Exceptions
     "NativError",
     "AuthenticationError",
     "InsufficientCreditsError",
@@ -54,7 +69,6 @@ __all__ = [
     "NotFoundError",
     "RateLimitError",
     "ServerError",
-    # Response types
     "Translation",
     "TranslationMetadata",
     "TMMatch",
@@ -72,4 +86,19 @@ __all__ = [
     "TMStats",
     "StyleGuide",
     "BrandVoice",
+    "AudioSegment",
+    "AudioTranscript",
+    "AudioVoice",
+    "AudioVoices",
+    "AudioPreview",
+    "AudioConsentScript",
+    "ClonedVoice",
+    "AudioSynthesizeMetadata",
+    "AudioSynthesis",
+    "RemuxedVideo",
+    "SubtitleCue",
+    "SubtitleParse",
+    "SubtitlePlaygroundCue",
+    "SubtitlePlaygroundLanguage",
+    "SubtitlePlayground",
 ]

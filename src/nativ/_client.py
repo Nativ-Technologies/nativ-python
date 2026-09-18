@@ -37,6 +37,7 @@ from ._types import (
     _parse_tm_entry,
     _parse_translation,
 )
+from ._media import MediaAsyncMixin, MediaSyncMixin
 from ._version import __version__
 
 DEFAULT_BASE_URL = "https://api.usenativ.com"
@@ -62,17 +63,20 @@ def _default_headers(api_key: str) -> Dict[str, str]:
     }
 
 
-def _prepare_file(file_input: FileInput) -> tuple:
+def _prepare_file(
+    file_input: FileInput, *, default_name: str = "upload.bin"
+) -> tuple:
     if isinstance(file_input, (str, Path)):
         path = Path(file_input)
         data = path.read_bytes()
         ct = mimetypes.guess_type(str(path))[0] or "application/octet-stream"
         return (path.name, data, ct)
     elif isinstance(file_input, bytes):
-        return ("image.png", file_input, "image/png")
+        ct = mimetypes.guess_type(default_name)[0] or "application/octet-stream"
+        return (default_name, file_input, ct)
     else:
         data = file_input.read()
-        name = getattr(file_input, "name", "image.png")
+        name = getattr(file_input, "name", default_name)
         ct = mimetypes.guess_type(name)[0] or "application/octet-stream"
         return (Path(name).name, data, ct)
 
@@ -212,7 +216,7 @@ def _parse_brand_voice(data: Dict[str, Any]) -> BrandVoice:
 # ===================================================================
 
 
-class Nativ:
+class Nativ(MediaSyncMixin):
     """Synchronous Nativ API client.
 
     Usage::
@@ -260,9 +264,11 @@ class Nativ:
         params: Optional[Dict[str, Any]] = None,
         data: Optional[Dict[str, Any]] = None,
         files: Optional[Any] = None,
+        timeout: Optional[float] = None,
     ) -> Dict[str, Any]:
         resp = self._client.request(
             method, path, json=json, params=params, data=data, files=files,
+            timeout=timeout,
         )
         _raise_for_status(resp)
         return resp.json()
@@ -574,7 +580,7 @@ class Nativ:
 # ===================================================================
 
 
-class AsyncNativ:
+class AsyncNativ(MediaAsyncMixin):
     """Asynchronous Nativ API client.
 
     Usage::
@@ -623,9 +629,11 @@ class AsyncNativ:
         params: Optional[Dict[str, Any]] = None,
         data: Optional[Dict[str, Any]] = None,
         files: Optional[Any] = None,
+        timeout: Optional[float] = None,
     ) -> Dict[str, Any]:
         resp = await self._client.request(
             method, path, json=json, params=params, data=data, files=files,
+            timeout=timeout,
         )
         _raise_for_status(resp)
         return resp.json()
