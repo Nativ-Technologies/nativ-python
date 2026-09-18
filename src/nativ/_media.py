@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, BinaryIO, Dict, List, Optional, Sequence, Union
+from typing import Any, BinaryIO, Dict, List, Optional, Sequence, TYPE_CHECKING, Union
 
 FileInput = Union[str, Path, bytes, BinaryIO]
 
@@ -319,6 +319,19 @@ def _bool_form(value: bool) -> str:
 
 
 class MediaSyncMixin:
+    if TYPE_CHECKING:
+        def _request(
+            self,
+            method: str,
+            path: str,
+            *,
+            json: Optional[Dict[str, Any]] = None,
+            params: Optional[Dict[str, Any]] = None,
+            data: Optional[Dict[str, Any]] = None,
+            files: Optional[Any] = None,
+            timeout: Optional[float] = None,
+        ) -> Dict[str, Any]: ...
+
     def transcribe_audio(
         self,
         file: FileInput,
@@ -593,6 +606,19 @@ class MediaSyncMixin:
 
 
 class MediaAsyncMixin:
+    if TYPE_CHECKING:
+        async def _request(
+            self,
+            method: str,
+            path: str,
+            *,
+            json: Optional[Dict[str, Any]] = None,
+            params: Optional[Dict[str, Any]] = None,
+            data: Optional[Dict[str, Any]] = None,
+            files: Optional[Any] = None,
+            timeout: Optional[float] = None,
+        ) -> Dict[str, Any]: ...
+
     async def transcribe_audio(
         self,
         file: FileInput,
